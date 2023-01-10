@@ -3,8 +3,10 @@ import express, { Express } from 'express';
 import { json } from 'body-parser';
 import cors from 'cors';
 import { sequelizeDB } from './database';
-import { errorHandlerMiddleware } from './middlwares/errors';
+import { errorHandlerMiddleware } from './middlwares/errorMiddleware';
+import { authMiddleware } from './middlwares/authMiddleware';
 import UserRouters from './routes/userRouter';
+
 
 class App {
   port: number;
@@ -16,7 +18,9 @@ class App {
   }
 
   private useMiddleware() {
-    this.app.use(errorHandlerMiddleware);
+    this.app.use(json());
+    this.app.use(cors({ origin: ['http://localhost:5500'] }));
+    this.app.use(authMiddleware)
   }
 
   private useRoutes() {
@@ -35,10 +39,9 @@ class App {
   }
 
   public init() {
-    this.app.use(json());
-    this.app.use(cors({ origin: ['http://localhost:5500'] }));
-    this.useRoutes();
     this.useMiddleware();
+    this.useRoutes();
+    this.app.use(errorHandlerMiddleware);
     this.initDataBase();
   }
 }

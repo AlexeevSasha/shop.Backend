@@ -35,7 +35,8 @@ User.init(
     phone: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: { notEmpty: true }
+      validate: { notEmpty: true },
+      unique: true
     },
     password: {
       type: DataTypes.STRING,

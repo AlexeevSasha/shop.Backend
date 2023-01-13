@@ -1,7 +1,8 @@
-import { Model, DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import { sequelizeDB } from '../database';
 import { UserModelT, UserT } from '../interfaces/user';
+import { Role } from '../common/constants/role';
 
 class User extends Model<UserT, UserModelT> {
   declare password: string;
@@ -43,10 +44,22 @@ User.init(
       allowNull: false,
       validate: { notEmpty: true }
     },
+    blocked: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
+    },
     role: {
       type: DataTypes.STRING,
-      defaultValue: 'user',
-      allowNull: false
+      defaultValue: Role.USER,
+      allowNull: false,
+      validate: {
+        isIn: [Object.values(Role)]
+      }
+    },
+    refreshToken: {
+      type: DataTypes.STRING,
+      defaultValue: null
     }
   },
   {
@@ -62,7 +75,7 @@ User.init(
       }
     },
     defaultScope: {
-      attributes: { exclude: ['password', 'createdAt', 'updatedAt'] }
+      attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'refreshToken'] }
     },
     scopes: {
       withPassword: { attributes: { exclude: ['createdAt', 'updatedAt'] } }

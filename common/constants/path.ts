@@ -5,6 +5,12 @@ export const pathRouter = {
     allUser: '/all-users',
     userById: '/:id',
     delete: '/delete/:id',
-    update: '/update/:id'
+    update: '/update',
+    block: '/block/:id',
+    refresh: '/refresh',
+    logout: '/logout'
+  },
+  product: {
+    create: '/create'
   }
 };

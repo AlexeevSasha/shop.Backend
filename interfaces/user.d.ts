@@ -1,3 +1,5 @@
+import { Role } from '../common/constants/role';
+
 export type UserT = {
   id: string,
   firstname: string,
@@ -5,7 +7,9 @@ export type UserT = {
   email: string,
   phone: string,
   password: string,
-  role: 'user'
+  role: Role,
+  blocked: boolean,
+  refreshToken: string | null
 };
 
 export type UserModelT = Omit<UserT, 'id' | 'role'>;

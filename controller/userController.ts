@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import { BadRequestError, UnauthenticatedError } from '../error';
+import { BadRequestError, UnauthenticatedError } from '../common/error';
 import UserModel from '../models/userModel';
-import { emailValidate, lengthValidate } from '../utils/validation';
+import { emailValidate, lengthValidate } from '../common/utils/validation';
 import { UserCreateT, UserLoginT, UserT } from '../interfaces/user';
 import bcrypt from 'bcryptjs';
-import { generateAccessToken } from '../utils/generateAccessToken';
-import { removeKeysFromObject } from '../utils/removeKeysFromObject';
+import { generateAccessToken } from '../common/utils/generateAccessToken';
+import { removeKeysFromObject } from '../common/utils/removeKeysFromObject';
+import { returnResponseMessage } from '../common/utils/returnResponseMessage';
+import { generateRefreshToken } from '../common/utils/generateRefreshToken';
+import jwt from 'jsonwebtoken';
 
 //todo change update user
 class UserController {
@@ -53,10 +56,53 @@ class UserController {
       if (!user || !checkPassword) throw new UnauthenticatedError('Wrong login or password');
 
       const token = generateAccessToken(user.id);
+      const refreshToken = generateRefreshToken(user.id);
+
+      await UserModel.update({ refreshToken }, { where: { id: user.id } });
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        maxAge: 168 * 60 * 60 * 1000
+      });
 
       res.send({
         user: removeKeysFromObject<UserT, Omit<UserT, 'password'>>(user.dataValues, ['password']),
         token
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const cookies = req.cookies;
+      if (!cookies?.refreshToken) throw new BadRequestError('Refresh token not found');
+      await UserModel.update({ refreshToken: null }, { where: { refreshToken: cookies?.refreshToken } });
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: true
+      });
+
+      res.json({ status: 200, message: 'You\'re out successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async refreshToken(req: Request, res: Response, next: NextFunction) {
+    try {
+      const cookies = req.cookies;
+      if (!cookies?.refreshToken) throw new BadRequestError('Refresh token not found');
+
+      const user = await UserModel.findOne({ where: { refreshToken: cookies?.refreshToken } });
+      if (!user) throw new BadRequestError('No refresh token in database or not matched');
+
+      const decoded = await jwt.verify(cookies?.refreshToken, String(process.env.JWT_SECRET)) as jwt.JwtPayload;
+      if (user.id !== decoded.id) throw new BadRequestError('There is something wrong with refresh token');
+
+      res.send({
+        accessToken: generateAccessToken(user.id)
       });
     } catch (error) {
       next(error);
@@ -68,17 +114,17 @@ class UserController {
       const { id } = req.params;
       const deleteUser = await UserModel.destroy({ where: { id } });
 
-      if (deleteUser === 0) throw new BadRequestError('Error when deleting a user')
+      if (deleteUser === 0) throw new BadRequestError('Error when deleting a user');
 
-      res.send({ message: 'User deleted successfully' });
+      returnResponseMessage(res, 200, 'User deleted successfully');
     } catch (error) {
       next(error);
     }
   }
 
-  public async updateUser(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+  public async updateUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.user;
       const user = await UserModel.update({
         ...req.body
       }, { where: { id } });
@@ -109,6 +155,19 @@ class UserController {
       if (!user) throw new BadRequestError('User not found');
 
       res.send(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async blockUser(req: Request<{ id: string }, {}, {}, { unblock?: string }>, res: Response, next: NextFunction) {
+    try {
+      const { unblock } = req.query;
+      const user = await UserModel.update({ blocked: !unblock }, { where: { id: req.params.id } });
+
+      if (!user) throw new BadRequestError('User not found');
+
+      returnResponseMessage(res, 200, `User successfully ${unblock ? 'unlocked' : 'locked out'}`);
     } catch (error) {
       next(error);
     }

@@ -20,11 +20,8 @@ Products.init(
     slug: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: { notEmpty: true },
-      unique: true,
-      get() {
-        return this.getDataValue('slug').toLowerCase();
-      }
+      validate: { notEmpty: true, isLowercase: true },
+      unique: true
     },
     description: {
       type: DataTypes.STRING,
@@ -32,34 +29,30 @@ Products.init(
       validate: { notEmpty: true }
     },
     price: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
       validate: { notEmpty: true }
     },
     oldPrice: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       defaultValue: null
     },
     quantity: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       validate: { notEmpty: true }
     },
     images: {
       type: DataTypes.ARRAY(DataTypes.STRING),
-      defaultValue: [],
-      allowNull: false,
-      validate: { notEmpty: true }
+      defaultValue: []
     },
     brand: {
       type: DataTypes.STRING,
       defaultValue: null
     },
     sold: {
-      type: DataTypes.NUMBER,
-      defaultValue: 0,
-      allowNull: false,
-      validate: { notEmpty: true }
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   },
   {
@@ -68,7 +61,7 @@ Products.init(
     timestamps: true,
     modelName: 'products',
     defaultScope: {
-      attributes: { exclude: ['createdAt', 'updatedAt'] }
+      attributes: { exclude: ['createdAt', 'updatedAt', 'sold'] }
     }
   }
 );

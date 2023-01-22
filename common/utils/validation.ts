@@ -6,4 +6,4 @@ export const emailValidate = (email: string) =>
     );
 
 export const lengthValidate = (str: string, min: number, max: number) =>
-  str.length > (min || 0) && str.length <= max && true;
+  str.length >= (min || 0) && str.length <= max && true;

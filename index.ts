@@ -1,11 +1,11 @@
 import 'dotenv/config';
+import './models/association';
 import express, { Express } from 'express';
 import { json } from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { sequelizeDB } from './database';
 import { errorHandlerMiddleware } from './middlwares/errorMiddleware';
-import { authMiddleware } from './middlwares/authMiddleware';
 import UserRouters from './routes/userRouter';
 import ProductRouter from './routes/productRouter';
 
@@ -23,7 +23,6 @@ class App {
     this.app.use(json());
     this.app.use(cors({ origin: ['http://localhost:5500'] }));
     this.app.use(cookieParser())
-    this.app.use(authMiddleware)
   }
 
   private useRoutes() {

@@ -4,11 +4,13 @@ import UserModel from '../models/userModel';
 import { emailValidate, lengthValidate } from '../common/utils/validation';
 import { UserCreateT, UserLoginT, UserT } from '../interfaces/user';
 import bcrypt from 'bcryptjs';
-import { generateAccessToken } from '../common/utils/generateAccessToken';
 import { removeKeysFromObject } from '../common/utils/removeKeysFromObject';
 import { returnResponseMessage } from '../common/utils/returnResponseMessage';
-import { generateRefreshToken } from '../common/utils/generateRefreshToken';
 import jwt from 'jsonwebtoken';
+import { generateToken } from '../common/utils/generateToken';
+import EmailController from './emailController';
+import { htmlMailer } from '../common/utils/htmlMailer';
+import ResetPasswordTokenModel from '../models/resetPasswordTokenModel';
 
 //todo change update user
 class UserController {
@@ -17,7 +19,7 @@ class UserController {
     if (!emailValidate(email)) {
       throw new BadRequestError('Invalid email address');
     }
-    if (!lengthValidate(password, 2, 30)) {
+    if (!lengthValidate(password, 3, 30)) {
       throw new BadRequestError('Password must be at least 3 and not more than 30 characters');
     }
   }
@@ -33,7 +35,7 @@ class UserController {
 
       const user = await UserModel.create(req.body);
 
-      const token = generateAccessToken(user.id);
+      const token = generateToken.accessToken(user.id);
 
       res.send({
         user: removeKeysFromObject<UserT, Omit<UserT, 'password'>>(user.dataValues, ['password']),
@@ -55,8 +57,8 @@ class UserController {
 
       if (!user || !checkPassword) throw new UnauthenticatedError('Wrong login or password');
 
-      const token = generateAccessToken(user.id);
-      const refreshToken = generateRefreshToken(user.id);
+      const token = generateToken.accessToken(user.id);
+      const refreshToken = generateToken.refreshToken(user.id);
 
       await UserModel.update({ refreshToken }, { where: { id: user.id } });
 
@@ -83,7 +85,6 @@ class UserController {
         httpOnly: true,
         secure: true
       });
-
       res.json({ status: 200, message: 'You\'re out successfully' });
     } catch (error) {
       next(error);
@@ -102,8 +103,82 @@ class UserController {
       if (user.id !== decoded.id) throw new BadRequestError('There is something wrong with refresh token');
 
       res.send({
-        accessToken: generateAccessToken(user.id)
+        accessToken: generateToken.accessToken(user.id)
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async changePassword(req: Request<{}, {}, { oldPassword: string; newPassword: string }>, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.user;
+      const { newPassword, oldPassword } = req.body;
+
+      if (newPassword === oldPassword) throw new BadRequestError('Passwords must not match');
+      if (!lengthValidate(newPassword, 3, 30)) {
+        throw new BadRequestError('Password must be at least 3 and not more than 30 characters');
+      }
+
+      const user = await UserModel.scope('withPassword').findOne({ where: { id } });
+      const checkOldPassword = await bcrypt.compare(oldPassword, user?.password || '');
+      if (!checkOldPassword) throw new BadRequestError('Old password is wrong');
+
+      const changePassword = await UserModel.update({ password: newPassword }, { where: { id } });
+
+      if (!changePassword) throw new BadRequestError('An error occurred while changing the password');
+
+      returnResponseMessage(res, 200, 'You have successfully changed your password');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async forgotPassword(req: Request<{}, {}, { email: string }>, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+      if (!emailValidate(email)) throw  new BadRequestError('You entered an invalid email');
+
+      const user = await UserModel.findOne({ where: { email } });
+      if (!user) throw new BadRequestError('User not found with this email');
+
+      const { resetToken, hashToken } = await generateToken.resetPasswordToken();
+
+      await ResetPasswordTokenModel.upsert({
+        userId: user.id,
+        token: hashToken,
+        tokenExpires: Date.now() + 3600000
+      });
+
+      await new EmailController().sendEmail({
+        to: email,
+        subject: 'Forgot yor password',
+        html: htmlMailer.getHtmlForgotPassword(resetToken, user.id, `${user.firstname} ${user.lastname}`)
+      });
+
+      returnResponseMessage(res, 200, 'A password reset message has been sent to your email');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async resetPassword(req: Request<{}, {}, { password: string, token: string, id: string }>, res: Response, next: NextFunction) {
+    try {
+      const { password, token, id } = req.body;
+      if (!lengthValidate(password, 3, 30)) {
+        throw new BadRequestError('Password must be at least 3 and not more than 30 characters');
+      }
+
+      const resetToken = await ResetPasswordTokenModel.findOne({ where: { userId: id } });
+      if (!resetToken || Date.now() > resetToken?.dataValues.tokenExpires) throw  new BadRequestError('The time to change the password has expired');
+
+      const hasToken =  await bcrypt.compare(token, resetToken.dataValues.token);
+      if (!hasToken) throw new BadRequestError("Invalid verification token")
+
+      await UserModel.update({ password }, { where: { id } });
+      await ResetPasswordTokenModel.destroy({ where: { userId: id } });
+
+      returnResponseMessage(res, 200, 'You have successfully changed your password');
     } catch (error) {
       next(error);
     }

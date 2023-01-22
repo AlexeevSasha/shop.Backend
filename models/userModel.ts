@@ -7,6 +7,8 @@ import { Role } from '../common/constants/role';
 class User extends Model<UserT, UserModelT> {
   declare password: string;
   declare id: string;
+  declare firstname: string;
+  declare lastname: string;
 }
 
 User.init(
@@ -75,7 +77,9 @@ User.init(
       }
     },
     defaultScope: {
-      attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'refreshToken'] }
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt', 'refreshToken']
+      }
     },
     scopes: {
       withPassword: { attributes: { exclude: ['createdAt', 'updatedAt'] } }

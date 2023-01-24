@@ -8,6 +8,9 @@ import { sequelizeDB } from './database';
 import { errorHandlerMiddleware } from './middlwares/errorMiddleware';
 import UserRouters from './routes/userRouter';
 import ProductRouter from './routes/productRouter';
+import BlogRouter from './routes/blogRouter';
+import CategoryRouter from './routes/categoryRouter';
+import CouponRouter from './routes/couponRouter';
 
 
 class App {
@@ -22,12 +25,15 @@ class App {
   private useMiddleware() {
     this.app.use(json());
     this.app.use(cors({ origin: ['http://localhost:5500'] }));
-    this.app.use(cookieParser())
+    this.app.use(cookieParser());
   }
 
   private useRoutes() {
     this.app.use('/api/user', new UserRouters().get());
-    this.app.use('/api/product', new ProductRouter().get())
+    this.app.use('/api/product', new ProductRouter().get());
+    this.app.use('/api/blog', new BlogRouter().get());
+    this.app.use('/api/category', new CategoryRouter().get());
+    this.app.use('/api/coupon', new CouponRouter().get());
   }
 
   private initDataBase() {

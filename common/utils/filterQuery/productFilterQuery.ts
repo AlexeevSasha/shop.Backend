@@ -1,19 +1,10 @@
-import { Op, Order } from 'sequelize';
+import { Op } from 'sequelize';
+import { FilterByQuery } from './filterByQuery';
 
-type OptionsT = {
-  where: Record<string, object>,
-  order?: Order,
-  limit?: number,
-  offset?: number
-}
 
-export class FilterByQuery {
-  private query;
-  private readonly options: OptionsT;
-
+class ProductFilterByQuery extends FilterByQuery {
   constructor(query: Record<string, unknown>) {
-    this.query = query;
-    this.options = { where: {} };
+    super(query);
   }
 
   private initSorting() {
@@ -41,28 +32,12 @@ export class FilterByQuery {
     }
   }
 
-  private initPaginate() {
-    const pageQuery = parseInt(this.query.page as string);
-    const sizeQuery = parseInt(this.query.size as string);
-
-    let page = 0;
-    let size = 10;
-
-    if (!Number.isNaN(pageQuery) && pageQuery > 0) {
-      page = pageQuery - 1;
-    }
-    if (!Number.isNaN(sizeQuery) && !(sizeQuery < 1)) {
-      size = sizeQuery;
-    }
-
-    this.options.limit = size;
-    this.options.offset = page * size
-  }
-
   init() {
+    super.init()
     this.initPrice();
     this.initSorting();
-    this.initPaginate();
     return this.options;
   }
 }
+
+export default ProductFilterByQuery;

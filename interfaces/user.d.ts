@@ -9,6 +9,7 @@ export type UserT = {
   password: string,
   role: Role,
   blocked: boolean,
+  favorites: string[]
   refreshToken: string | null
 };
 

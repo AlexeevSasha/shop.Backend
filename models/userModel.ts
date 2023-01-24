@@ -9,6 +9,8 @@ class User extends Model<UserT, UserModelT> {
   declare id: string;
   declare firstname: string;
   declare lastname: string;
+  declare favorites: string[];
+  declare refreshToken: string;
 }
 
 User.init(
@@ -58,6 +60,11 @@ User.init(
       validate: {
         isIn: [Object.values(Role)]
       }
+    },
+    favorites: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+      defaultValue: []
     },
     refreshToken: {
       type: DataTypes.STRING,

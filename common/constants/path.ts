@@ -17,6 +17,25 @@ export const pathRouter = {
     create: '/create',
     productById: '/:id',
     delete: '/delete/:id',
-    allProduct: '/'
+    allProduct: '/',
+    addToFavorites: '/add-favorites',
+    deleteToFavorites: '/delete-favorites'
+  },
+  blog: {
+    create: '/create',
+    blogById: '/:id',
+    delete: '/delete/:id',
+    allBlogs: '/'
+  },
+  category: {
+    create: '/create',
+    update: '/update/:id',
+    categoryById: '/:id',
+    delete: '/delete/:id',
+    allCategories: '/'
+  },
+  coupon: {
+    create: '/create',
+    allCoupons: '/'
   }
 };

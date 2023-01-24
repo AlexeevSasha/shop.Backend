@@ -15,9 +15,11 @@ class ProductRouter {
 
   get() {
     this.routers.route(pathRouter.product.create).post(authMiddleware, IsAdminMiddleware, this.controller.create);
-    this.routers.route(pathRouter.product.allProduct).get(authMiddleware, this.controller.getAllProduct);
-    this.routers.route(pathRouter.product.productById).get(authMiddleware, this.controller.getProductById);
+    this.routers.route(pathRouter.product.allProduct).get(this.controller.getAllProduct);
+    this.routers.route(pathRouter.product.productById).get(this.controller.getProductById);
     this.routers.route(pathRouter.product.delete).delete(authMiddleware, IsAdminMiddleware, this.controller.deleteProduct);
+    this.routers.route(pathRouter.product.addToFavorites).post(authMiddleware, this.controller.addToFavorites);
+    this.routers.route(pathRouter.product.deleteToFavorites).post(authMiddleware, this.controller.deleteToFavorites);
     return this.routers;
   }
 }

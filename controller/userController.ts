@@ -60,7 +60,8 @@ class UserController {
       const token = generateToken.accessToken(user.id);
       const refreshToken = generateToken.refreshToken(user.id);
 
-      await UserModel.update({ refreshToken }, { where: { id: user.id } });
+      user.refreshToken = refreshToken
+      await user.save()
 
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -247,6 +248,7 @@ class UserController {
       next(error);
     }
   }
+
 }
 
 export default UserController;

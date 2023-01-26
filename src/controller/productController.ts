@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import ProductModel from '../models/productModel';
+import ProductModel from '../modelsMain/productModel';
 import { BadRequestError } from '../common/error';
 import slugify from 'slugify';
 import { returnResponseMessage } from '../common/utils/returnResponseMessage';
 import ProductFilterByQuery from '../common/utils/filterQuery/productFilterQuery';
-import UserModel from '../models/userModel';
+import UserModel from '../modelsMain/userModel';
 
 // todo add update product
 class ProductController {

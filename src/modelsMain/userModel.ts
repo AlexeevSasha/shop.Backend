@@ -1,10 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import { sequelizeDB } from '../database';
-import { UserModelT, UserT } from '../interfaces/user';
+import { UserModelT, IUser } from '../interfaces/user';
 import { Role } from '../common/constants/role';
 
-class User extends Model<UserT, UserModelT> {
+class User extends Model<IUser, UserModelT> {
   declare password: string;
   declare id: string;
   declare firstname: string;
@@ -39,8 +39,7 @@ User.init(
     },
     phone: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: { notEmpty: true },
+      defaultValue: null,
       unique: true
     },
     password: {
@@ -73,7 +72,6 @@ User.init(
   },
   {
     sequelize: sequelizeDB,
-    freezeTableName: true,
     timestamps: true,
     modelName: 'users',
     hooks: {

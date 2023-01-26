@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import CouponModel from '../models/couponModel';
+import CouponModel from '../modelsMain/couponModel';
 import { CouponT } from '../interfaces/coupon';
 
 class CouponController {

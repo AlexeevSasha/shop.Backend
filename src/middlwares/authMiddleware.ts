@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { BadRequestError } from '../common/error';
-import UserModel from '../models/userModel';
+import UserModel from '../modelsMain/userModel';
 import { returnResponseMessage } from '../common/utils/returnResponseMessage';
 
 

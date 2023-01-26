@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { BadRequestError } from '../common/error';
 import { returnResponseMessage } from '../common/utils/returnResponseMessage';
-import CategoryModel from '../models/categoryModel';
+import CategoryModel from '../modelsMain/categoryModel';
 import { CategoryT } from '../interfaces/category';
 import { FilterByQuery } from '../common/utils/filterQuery/filterByQuery';
 

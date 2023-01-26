@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { BadRequestError } from '../common/error';
 import { returnResponseMessage } from '../common/utils/returnResponseMessage';
-import BlogModel from '../models/blogModel';
+import BlogModel from '../modelsMain/blogModel';
 import { BlogT } from '../interfaces/blog';
 import BlogFilterByQuery from '../common/utils/filterQuery/blogFilterQuery';
 

@@ -1,8 +1,22 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelizeDB } from '../database';
-import { ProductT } from '../interfaces/product';
+import sequelizeConnection from '../../config/databaseConnect';
+import { ProductT } from '../../interfaces/product';
 
-class Products extends Model<ProductT> {}
+class Products extends Model<ProductT> {
+  public id!: string;
+  public title!: string;
+  public slug!: string;
+  public brand: string | null;
+  public description!: string;
+  public price: number;
+  public oldPrice: number | null;
+  public quantity: number;
+  public images: string[];
+  public sold: number;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 Products.init(
   {
@@ -34,7 +48,7 @@ Products.init(
       validate: { notEmpty: true }
     },
     oldPrice: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       defaultValue: null
     },
     quantity: {
@@ -56,10 +70,8 @@ Products.init(
     }
   },
   {
-    sequelize: sequelizeDB,
-    freezeTableName: true,
-    timestamps: true,
-    modelName: 'products',
+    sequelize: sequelizeConnection,
+    tableName: 'Products',
     defaultScope: {
       attributes: { exclude: ['createdAt', 'updatedAt', 'sold'] }
     }

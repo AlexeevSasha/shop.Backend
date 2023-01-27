@@ -1,8 +1,10 @@
-export type CouponT = {
-  id: string
-  name: string
-  expiry: Date
-  discount: number
-};
+import { Optional } from 'sequelize';
 
-export type CouponModelT = Omit<Coupon, 'id'>;
+export interface ICoupon {
+  id: string;
+  name: string;
+  expiry: Date;
+  discount: number;
+}
+
+export interface ICouponCreationAttributes extends Optional<ICoupon, 'id'> {}

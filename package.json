@@ -5,7 +5,9 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "server": "nodemon --files src/index.ts"
+    "server": "nodemon --files src/index.ts",
+    "migrate": "npx sequelize-cli db:migrate",
+    "seeders": "npx sequelize-cli db:seed:all"
   },
   "license": "ISC",
   "dependencies": {

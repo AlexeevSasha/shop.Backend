@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import './modelsMain/association';
 import express, { Express } from 'express';
 import { json } from 'body-parser';
 import cors from 'cors';

@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import databaseConnect from '../../config/databaseConnect';
+import sequelizeConnection from '../../config/databaseConnect';
 import { Role } from '../../common/constants/role';
 import { IUser, IUserCreationAttributes } from '../../interfaces/user';
 import bcrypt from 'bcryptjs';
@@ -78,7 +78,8 @@ User.init(
     }
   },
   {
-    sequelize: databaseConnect,
+    sequelize: sequelizeConnection,
+    tableName: "Users",
     hooks: {
       beforeValidate: async (user) => {
         if (!user.password) return;

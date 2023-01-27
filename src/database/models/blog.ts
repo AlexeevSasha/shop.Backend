@@ -1,8 +1,21 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelizeDB } from '../database';
-import { BlogModelT, BlogT } from '../interfaces/blog';
+import sequelizeConnection from '../../config/databaseConnect';
+import {  IBlog, IBlogCreationAttributes } from '../../interfaces/blog';
 
-class Blogs extends Model<BlogT, BlogModelT> {}
+class Blogs extends Model<IBlog, IBlogCreationAttributes> implements IBlog{
+  public id!: string;
+  public title!: string;
+  public description!: string;
+  public category!: string;
+  public views!: number;
+  public likes!: string[];
+  public dislikes!: string[];
+  public image: string | null;
+  public author!: string;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 Blogs.init(
   {
@@ -49,10 +62,8 @@ Blogs.init(
     }
   },
   {
-    sequelize: sequelizeDB,
-    freezeTableName: true,
-    timestamps: true,
-    modelName: 'blogs',
+    sequelize: sequelizeConnection,
+    modelName: 'Blogs',
     defaultScope: {
       attributes: { exclude: ['createdAt', 'updatedAt'] }
     }

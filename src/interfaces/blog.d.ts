@@ -1,13 +1,16 @@
-export type BlogT = {
-  id: string,
-  title: string,
-  description: string,
-  category: string,
-  views: number,
-  likes: string[],
-  dislikes: string[]
-  image: string,
-  author: string
-};
+import { Optional } from 'sequelize';
 
-export type BlogModelT = Omit<BlogT, 'id' | "likes" | "dislikes" | 'image' | 'views'>;
+export interface IBlog {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  views: number;
+  likes: string[];
+  dislikes: string[];
+  image: string | null;
+  author: string;
+}
+
+export interface IBlogCreationAttributes
+  extends Optional<IBlog, 'id' | 'likes' | 'dislikes' | 'image' | 'views'> {}

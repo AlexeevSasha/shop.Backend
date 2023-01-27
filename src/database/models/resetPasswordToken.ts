@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelizeDB } from '../database';
-import { ResetPassword } from '../interfaces/resetPassword';
+import sequelizeConnection from '../../config/databaseConnect';
+import { ResetPassword } from '../../interfaces/resetPassword';
 
 class ResetPasswordToken extends Model<ResetPassword> {}
 
@@ -12,7 +12,7 @@ ResetPasswordToken.init(
       validate: { notEmpty: true },
       primaryKey: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id'
       }
     },
@@ -26,10 +26,8 @@ ResetPasswordToken.init(
     }
   },
   {
-    sequelize: sequelizeDB,
-    freezeTableName: true,
-    timestamps: true,
-    modelName: 'resetPasswordTokens'
+    sequelize: sequelizeConnection,
+    tableName: 'ResetPasswordTokens'
   }
 );
 

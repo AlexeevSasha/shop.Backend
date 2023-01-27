@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { BadRequestError, UnauthenticatedError } from '../common/error';
 import UserModel from "../database/models/user"
+import ResetPasswordTokenModel from '../database/models/resetPasswordToken';
 import { emailValidate, lengthValidate } from '../common/utils/validation';
 import { UserCreateT, UserLoginT, IUser } from '../interfaces/user';
 import bcrypt from 'bcryptjs';
@@ -10,7 +11,7 @@ import jwt from 'jsonwebtoken';
 import { generateToken } from '../common/utils/generateToken';
 import EmailController from './emailController';
 import { htmlMailer } from '../common/utils/htmlMailer';
-import ResetPasswordTokenModel from '../modelsMain/resetPasswordTokenModel';
+
 
 //todo change update user
 class UserController {
@@ -145,6 +146,7 @@ class UserController {
       if (!user) throw new BadRequestError('User not found with this email');
 
       const { resetToken, hashToken } = await generateToken.resetPasswordToken();
+
 
       await ResetPasswordTokenModel.upsert({
         userId: user.id,

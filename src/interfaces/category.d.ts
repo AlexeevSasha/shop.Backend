@@ -1,6 +1,8 @@
-export type CategoryT = {
-  id: string
-  title: string
-};
+import { Optional } from 'sequelize';
 
-export type CategoryModelT = Omit<CategoryT, 'id'>;
+export interface ICategory {
+  id: string;
+  title: string;
+}
+
+export interface ICategoryCreationAttributes extends Optional<ICategory, 'id'> {}

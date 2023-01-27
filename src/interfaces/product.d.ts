@@ -5,7 +5,7 @@ export type ProductT = {
   brand: string | null
   description: string
   price: number
-  oldPrice: number
+  oldPrice: number | null
   quantity: number
   images: string[]
   sold: number

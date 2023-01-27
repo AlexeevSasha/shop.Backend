@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { BadRequestError } from '../common/error';
 import { returnResponseMessage } from '../common/utils/returnResponseMessage';
-import BlogModel from '../modelsMain/blogModel';
-import { BlogT } from '../interfaces/blog';
+import BlogModel from '../database/models/blog';
 import BlogFilterByQuery from '../common/utils/filterQuery/blogFilterQuery';
+import { IBlog } from '../interfaces/blog';
 
 // todo add update blog and likes/dislike
 class BlogController {
 
-  public async create(req: Request<{}, {}, BlogT>, res: Response, next: NextFunction) {
+  public async create(req: Request<{}, {}, IBlog>, res: Response, next: NextFunction) {
     try {
       const blog = await BlogModel.create(req.body);
       res.send(blog);

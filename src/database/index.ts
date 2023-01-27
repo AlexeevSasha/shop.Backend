@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 
 export const sequelizeDB = new Sequelize({
-  database: 'shop',
+  database: process.env.PG_NAME,
   username: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   logging: false,

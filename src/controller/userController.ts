@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { BadRequestError, UnauthenticatedError } from '../common/error';
-import UserModel from '../models/userModel';
+import UserModel from "../database/models/user"
+import ResetPasswordTokenModel from '../database/models/resetPasswordToken';
 import { emailValidate, lengthValidate } from '../common/utils/validation';
-import { UserCreateT, UserLoginT, UserT } from '../interfaces/user';
+import { UserCreateT, UserLoginT, IUser } from '../interfaces/user';
 import bcrypt from 'bcryptjs';
 import { removeKeysFromObject } from '../common/utils/removeKeysFromObject';
 import { returnResponseMessage } from '../common/utils/returnResponseMessage';
@@ -10,7 +11,7 @@ import jwt from 'jsonwebtoken';
 import { generateToken } from '../common/utils/generateToken';
 import EmailController from './emailController';
 import { htmlMailer } from '../common/utils/htmlMailer';
-import ResetPasswordTokenModel from '../models/resetPasswordTokenModel';
+
 
 //todo change update user
 class UserController {
@@ -33,12 +34,12 @@ class UserController {
       const existEmail = await UserModel.findOne({ where: { email } });
       if (existEmail) throw new BadRequestError('This email already exists');
 
-      const user = await UserModel.create(req.body);
+      const user = await UserModel.create(req.body as any);
 
       const token = generateToken.accessToken(user.id);
 
       res.send({
-        user: removeKeysFromObject<UserT, Omit<UserT, 'password'>>(user.dataValues, ['password']),
+        user: removeKeysFromObject<IUser, Omit<IUser, 'password'>>(user.dataValues, ['password']),
         token
       });
     } catch (error) {
@@ -69,8 +70,9 @@ class UserController {
       });
 
       res.send({
-        user: removeKeysFromObject<UserT, Omit<UserT, 'password'>>(user.dataValues, ['password']),
+        user: removeKeysFromObject<IUser, Omit<IUser, 'password'>>(user.dataValues, ['password']),
         token
+
       });
     } catch (error) {
       next(error);
@@ -144,6 +146,7 @@ class UserController {
       if (!user) throw new BadRequestError('User not found with this email');
 
       const { resetToken, hashToken } = await generateToken.resetPasswordToken();
+
 
       await ResetPasswordTokenModel.upsert({
         userId: user.id,

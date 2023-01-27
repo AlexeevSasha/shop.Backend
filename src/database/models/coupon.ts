@@ -1,8 +1,16 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelizeDB } from '../database';
-import { CouponModelT, CouponT } from '../interfaces/coupon';
+import sequelizeConnection from '../../config/databaseConnect';
+import { ICouponCreationAttributes, ICoupon } from '../../interfaces/coupon';
 
-class Coupon extends Model<CouponT, CouponModelT> {}
+class Coupon extends Model<ICoupon, ICouponCreationAttributes> implements ICoupon {
+  public id!: string;
+  public name!: string;
+  public expiry!: Date;
+  public discount!: number;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 Coupon.init(
   {
@@ -30,10 +38,8 @@ Coupon.init(
     }
   },
   {
-    sequelize: sequelizeDB,
-    freezeTableName: true,
-    timestamps: true,
-    modelName: 'coupons',
+    sequelize: sequelizeConnection,
+    modelName: 'Coupons',
     defaultScope: {
       attributes: { exclude: ['createdAt', 'updatedAt'] }
     }

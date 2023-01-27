@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "author": "Alexeev Alexander",
   "description": "",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
-    "server": "nodemon --files index.ts"
+    "server": "nodemon --files src/index.ts",
+    "migrate": "npx sequelize-cli db:migrate",
+    "seeders": "npx sequelize-cli db:seed:all"
   },
   "license": "ISC",
   "dependencies": {
@@ -32,6 +34,7 @@
     "@types/pg": "^8.6.5",
     "nodemon": "^2.0.18",
     "prettier": "2.7.1",
+    "sequelize-cli": "^6.5.2",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
   }

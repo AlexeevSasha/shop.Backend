@@ -1,10 +1,8 @@
 import 'dotenv/config';
-import './models/association';
 import express, { Express } from 'express';
 import { json } from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { sequelizeDB } from './database';
 import { errorHandlerMiddleware } from './middlwares/errorMiddleware';
 import UserRouters from './routes/userRouter';
 import ProductRouter from './routes/productRouter';
@@ -36,22 +34,13 @@ class App {
     this.app.use('/api/coupon', new CouponRouter().get());
   }
 
-  private initDataBase() {
-    sequelizeDB
-      .sync()
-      .then(() => {
-        this.app.listen(this.port, () => {
-          console.log(`Server started on port ${this.port}`);
-        });
-      })
-      .catch((err) => console.log(`Error: ${err}`));
-  }
-
   public init() {
     this.useMiddleware();
     this.useRoutes();
     this.app.use(errorHandlerMiddleware);
-    this.initDataBase();
+    this.app.listen(this.port, () => {
+      console.log(`Server started on port ${this.port}`);
+    });
   }
 }
 

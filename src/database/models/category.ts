@@ -1,8 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelizeDB } from '../database';
-import { CategoryModelT, CategoryT } from '../interfaces/category';
+import sequelizeConnection from '../../config/databaseConnect';
+import { ICategory, ICategoryCreationAttributes } from '../../interfaces/category';
 
-class Category extends Model<CategoryT, CategoryModelT> {}
+class Category extends Model<ICategory, ICategoryCreationAttributes> implements ICategory {
+  public id!: string;
+  public title!: string;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 Category.init(
   {
@@ -20,10 +26,8 @@ Category.init(
     }
   },
   {
-    sequelize: sequelizeDB,
-    freezeTableName: true,
-    timestamps: true,
-    modelName: 'categories',
+    sequelize: sequelizeConnection,
+    modelName: 'Categories',
     defaultScope: {
       attributes: { exclude: ['createdAt', 'updatedAt'] }
     }

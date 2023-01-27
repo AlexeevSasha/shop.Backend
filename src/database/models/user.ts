@@ -1,16 +1,23 @@
 import { DataTypes, Model } from 'sequelize';
+import sequelizeConnection from '../../config/databaseConnect';
+import { Role } from '../../common/constants/role';
+import { IUser, IUserCreationAttributes } from '../../interfaces/user';
 import bcrypt from 'bcryptjs';
-import { sequelizeDB } from '../database';
-import { UserModelT, UserT } from '../interfaces/user';
-import { Role } from '../common/constants/role';
 
-class User extends Model<UserT, UserModelT> {
-  declare password: string;
-  declare id: string;
-  declare firstname: string;
-  declare lastname: string;
-  declare favorites: string[];
-  declare refreshToken: string;
+class User extends Model<IUser, IUserCreationAttributes> implements IUser {
+  public password!: string;
+  public id!: string;
+  public firstname!: string;
+  public lastname!: string;
+  public favorites!: string[];
+  public refreshToken!: string;
+  public email!: string;
+  public phone: string | null;
+  public role!: Role;
+  public blocked: boolean;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 User.init(
@@ -39,8 +46,7 @@ User.init(
     },
     phone: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: { notEmpty: true },
+      defaultValue: null,
       unique: true
     },
     password: {
@@ -72,10 +78,8 @@ User.init(
     }
   },
   {
-    sequelize: sequelizeDB,
-    freezeTableName: true,
-    timestamps: true,
-    modelName: 'users',
+    sequelize: sequelizeConnection,
+    tableName: "Users",
     hooks: {
       beforeValidate: async (user) => {
         if (!user.password) return;

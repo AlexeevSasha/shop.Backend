@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { BadRequestError } from '../common/error';
 import { returnResponseMessage } from '../common/utils/returnResponseMessage';
-import CategoryModel from '../models/categoryModel';
-import { CategoryT } from '../interfaces/category';
+import CategoryModel from '../database/models/category';
+import { ICategory } from '../interfaces/category';
 import { FilterByQuery } from '../common/utils/filterQuery/filterByQuery';
 
 
 class CategoryController {
 
-  public async createCategory(req: Request<{}, {}, CategoryT>, res: Response, next: NextFunction) {
+  public async createCategory(req: Request<{}, {}, ICategory>, res: Response, next: NextFunction) {
     try {
       const category = await CategoryModel.create(req.body);
       res.send(category);

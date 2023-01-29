@@ -3,6 +3,7 @@ import ProductCtrl from '../controller/productController';
 import { pathRouter } from '../common/constants/path';
 import { IsAdminMiddleware } from '../middlwares/isAdminMiddleware';
 import { authMiddleware } from '../middlwares/authMiddleware';
+import uploadImagesMiddlewares from '../middlwares/uploadImages';
 
 class ProductRouter {
   private readonly routers: Router;
@@ -20,6 +21,10 @@ class ProductRouter {
     this.routers.route(pathRouter.product.delete).delete(authMiddleware, IsAdminMiddleware, this.controller.deleteProduct);
     this.routers.route(pathRouter.product.addToFavorites).post(authMiddleware, this.controller.addToFavorites);
     this.routers.route(pathRouter.product.deleteToFavorites).post(authMiddleware, this.controller.deleteToFavorites);
+    this.routers.route(pathRouter.product.upload).post(authMiddleware, IsAdminMiddleware,
+      uploadImagesMiddlewares.uploadImages().array('images',10),
+      uploadImagesMiddlewares.imgResize(),
+      this.controller.uploadImages)
     return this.routers;
   }
 }

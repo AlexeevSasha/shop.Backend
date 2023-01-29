@@ -19,7 +19,8 @@ export const pathRouter = {
     delete: '/delete/:id',
     allProduct: '/',
     addToFavorites: '/add-favorites',
-    deleteToFavorites: '/delete-favorites'
+    deleteToFavorites: '/delete-favorites',
+    upload: '/upload/:id'
   },
   blog: {
     create: '/create',
@@ -36,6 +37,8 @@ export const pathRouter = {
   },
   coupon: {
     create: '/create',
+    update: '/update/:id',
+    delete: '/delete/:id',
     allCoupons: '/'
   }
 };

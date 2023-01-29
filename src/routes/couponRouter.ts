@@ -15,7 +15,9 @@ class CouponRouter {
 
   get() {
     this.routers.route(pathRouter.coupon.create).post(authMiddleware, IsAdminMiddleware, this.controller.create);
-    this.routers.route(pathRouter.coupon.allCoupons).get(authMiddleware, IsAdminMiddleware, this.controller.getAllCoupon);
+    this.routers.route(pathRouter.coupon.allCoupons).get(this.controller.getAllCoupon);
+    this.routers.route(pathRouter.coupon.update).put(authMiddleware, IsAdminMiddleware, this.controller.updateCoupon);
+    this.routers.route(pathRouter.coupon.delete).delete(authMiddleware, IsAdminMiddleware, this.controller.deleteCoupon);
     return this.routers;
   }
 }
